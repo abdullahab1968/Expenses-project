@@ -27,4 +27,9 @@ router.post('/expense', function(req, res){
       })
 })
 
+router.put('/update', function(req, res){
+   const group1 = req.query.group1
+   const group2 = req.query.group2
+   Expense.find({group: group1}).then(r => {r[0].group = group2}).then(res.end())
+  });
 module.exports = router
