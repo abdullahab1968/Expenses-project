@@ -54,13 +54,15 @@ router.post("/expense", function (req, res) {
 });
 
 router.put("/update", function (req, res) {
-  const group1 = req.query.group1;
-  const group2 = req.query.group2;
-  Expense.find({ group: group1 })
-    .then((r) => {
-      r[0].group = group2;
-    })
-    .then(res.end());
+  const group1 = req.query.g1;
+  const group2 = req.query.g2;
+  Expense.updateOne(
+                     {group: group1},
+                     {$set: {group: group2}}
+                     ,function(err , expense){
+                     res.send(expense)
+                  })
+
 });
 
 router.get("/expenses/:group", function (req, res) {
@@ -75,7 +77,7 @@ router.get("/expenses/:group", function (req, res) {
       return;
     });
   } else {
-    Expense.find({ group: groupParam }).then((r) => res.send(r));
+         Expense.find({ group: groupParam }).then((r) => res.send(r));
   }
 });
 module.exports = router;
