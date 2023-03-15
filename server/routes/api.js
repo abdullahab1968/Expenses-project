@@ -3,15 +3,14 @@ const router = express.Router();
 
 const Expense = require("../models/Expense");
 const moment = require("moment");
+const dateUtilities = require('../utiles/date-utiles')
 
 router.get("/expenses", function (req, res) {
   let date1 = req.query.d1;
   let date2 = req.query.d2;
   if (date1) {
-    date1 = moment(date1, "YYYY-MM-DD").format("LLLL");
-    date2 = date2
-      ? moment(date2, "YYYY-MM-DD").format("LLLL")
-      : moment().format("LLLL");
+    date1 = dateUtilities.format(date1)   //code duplication
+    date2 = date2 ? dateUtilities.format(date2) : new Date()
    
     Expense.find({ date: { $lte: date2, $gte: date1 } })
                                                       .then((expenses) =>
@@ -26,7 +25,7 @@ router.get("/expenses", function (req, res) {
       .then(function (expenses) {
         res.send(expenses);
       })
-      .catch(err => res.status(400).send("Somthing is going wrong"))
+      .catch(err => res.status(400).send("Somthing is going wrong")) // in send prefer to send JSON with status code
       return;
   }
 });
@@ -35,9 +34,7 @@ router.post("/expense", function (req, res) {
   const item = req.query.item;
   const amount = req.query.amount;
   const group = req.query.group;
-  const date = req.query.date
-    ? moment(req.query.date, "YYYY-MM-DD").format("LLLL")
-    : moment().format("LLLL");
+  const date = req.query.date? dateUtilities.format(req.query.date) : new Date()
 
   const expense = new Expense({
     amount: amount,
